@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Health Chatbot</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-image:url("https://slidescorner.com/wp-content/uploads/2022/12/01-Mental-Health-Free-PPT-Backgrounds-by-SlidesCorner.com_.jpg") ;
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Chatbot container */
+        .chatbot-container {
+            width: 450px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 3px solid #ff8c00; /* Add vibrant border */
+        }
+
+        /* Header section */
+        .chatbot-header {
+            background: linear-gradient(45deg, #ff6f61, #ff8c00); /* Vibrant gradient */
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 3px solid #ff8c00;
+        }
+
+        /* Chatbot messages section */
+        .chatbot-messages {
+            height: 350px;
+            padding: 15px;
+            overflow-y: auto;
+            background-color: #f0f0f0;
+            scroll-behavior: smooth;
+        }
+
+        /* User and bot messages */
+        .user-message, .bot-message {
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 15px;
+            margin: 10px 0;
+            font-size: 16px;
+            line-height: 1.4;
+        }
+
+        /* Styling for user messages */
+        .user-message {
+            background-color: #6c63ff; /* Change to a softer tone */
+            color: white;
+            margin-left: auto;
+            text-align: right;
+            animation: fadeInUp 0.3s ease-in-out;
+        }
+
+        /* Styling for bot messages */
+        .bot-message {
+            background-color: #e0e0e0;
+            color: #333;
+            margin-right: auto;
+            text-align: left;
+            animation: fadeInUp 0.3s ease-in-out;
+        }
+
+        /* Chatbot input section */
+        .chatbot-input {
+            display: flex;
+            border-top: 2px solid #ff8c00;
+            padding: 10px;
+        }
+
+        input[type="text"] {
+            flex-grow: 1;
+            padding: 15px;
+            border-radius: 25px;
+            border: 1px solid #ddd;
+            outline: none;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+        /* Button styling */
+        button {
+            background: #ff8c00;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Hover effects for the button */
+        button:hover {
+            background-color: #ff6f61;
+            transform: translateY(-2px); /* Slight movement */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3); /* Deeper shadow */
+        }
+
+        /* Scrollbar styling */
+        .chatbot-messages::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-thumb {
+            background-color: #ff8c00;
+            border-radius: 4px;
+        }
+
+        .chatbot-messages::-webkit-scrollbar-track {
+            background-color: #f0f0f0;
+        }
+
+        /* Animations for messages */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="chatbot-container">
+        <div class="chatbot-header">
+            Mental Health Chatbot
+        </div>
+        <div class="chatbot-messages" id="chatbot-messages">
+            <!-- Chatbot messages will be displayed here -->
+        </div>
+        <div class="chatbot-input">
+            <form id="user-input-form">
+                <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("user-input-form").addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            const userInput = document.getElementById("user-input").value;
+            document.getElementById("user-input").value = ""; // Clear the input field
+
+            if (userInput) {
+                const messageContainer = document.getElementById("chatbot-messages");
+
+                // Display the user message
+                const userMessage = document.createElement("div");
+                userMessage.classList.add("user-message");
+                userMessage.textContent = userInput;
+                messageContainer.appendChild(userMessage);
+
+                // Make an AJAX call to get the bot response
+                fetch('/get_response', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ message: userInput }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Display the bot response
+                    const botMessage = document.createElement("div");
+                    botMessage.classList.add("bot-message");
+                    botMessage.textContent = data.response;
+                    messageContainer.appendChild(botMessage);
+                    
+                    messageContainer.scrollTop = messageContainer.scrollHeight; // Auto scroll to bottom
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
